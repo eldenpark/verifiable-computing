@@ -235,5 +235,6 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.toptal.com/developers/gitignore/api/windows,linux,osx,node,visualstudiocode,vim,c++,rust,go
+# End of https://www.toptal.com/developers/gitignore/api/windows,linux,osx,node,visualstudiocode,vim,c++,rust,pure
 
+__temp/
