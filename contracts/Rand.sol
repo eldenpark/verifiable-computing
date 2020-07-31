@@ -6,19 +6,35 @@ contract Rand {
 	address[] worked;
 	address[] bids;
 	mapping (address => uint) pledges;
+
 	event RoundSetup(uint256 value);
 	event RandCreate(uint256 value);
+	event Transfer(address indexed from, address indexed to, uint256 value); /* This is an event */
 
-	constructor() public {
-		// balances[tx.origin] = 10000;
+	event Deposit(
+        address indexed _from,
+        bytes32 indexed _id,
+        uint _value
+    );
+
+	function deposit(bytes32 _id)
+	public payable {
+			// Events are emitted using `emit`, followed by
+			// the name of the event and the arguments
+			// (if any) in parentheses. Any such invocation
+			// (even deeply nested) can be detected from
+			// the JavaScript API by filtering for `Deposit`.
+			emit Deposit(msg.sender, _id, msg.value);
 	}
 
-	function requestDelegate(address _work)
-	public pure returns (bool a)
+	function requestDelegate(address receiver, uint amount)
+	public payable
 	{
+		emit RoundSetup(123);
+		// emit Transfer(msg.sender, receiver, amount);
 		// save _work => work
 		// emit event RoundSetup
-		return true;
+		// return true;
 	}
 
 	function bid(uint pledge)
@@ -36,11 +52,4 @@ contract Rand {
 		return true;
 	}
 
-	// function sendCoin(address receiver, uint amount) public returns(bool sufficient) {
-	// 	if (balances[msg.sender] < amount) return false;
-	// 	balances[msg.sender] -= amount;
-	// 	balances[receiver] += amount;
-	// 	emit Transfer(msg.sender, receiver, amount);
-	// 	return true;
-	// }
 }
