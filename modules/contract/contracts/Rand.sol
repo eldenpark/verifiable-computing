@@ -11,22 +11,6 @@ contract Rand {
 	event RandCreate(uint256 value);
 	event Transfer(address indexed from, address indexed to, uint256 value); /* This is an event */
 
-	event Deposit(
-        address indexed _from,
-        bytes32 indexed _id,
-        uint _value
-    );
-
-	function deposit(bytes32 _id)
-	public payable {
-			// Events are emitted using `emit`, followed by
-			// the name of the event and the arguments
-			// (if any) in parentheses. Any such invocation
-			// (even deeply nested) can be detected from
-			// the JavaScript API by filtering for `Deposit`.
-			emit Deposit(msg.sender, _id, msg.value);
-	}
-
 	function requestDelegate(address receiver, uint amount)
 	public payable
 	{

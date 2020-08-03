@@ -1,15 +1,10 @@
 {
-  "dependencies": {
-    "solc": "0.6.12",
-    "web3": "^1.2.11"
-  },
   "devDependencies": {
     "@babel/core": "^7.9.0",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/plugin-proposal-decorators": "^7.4.4",
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@babel/preset-env": "^7.9.0",
-    "@babel/preset-react": "^7.9.4",
     "@babel/preset-typescript": "^7.9.0",
     "@babel/register": "^7.9.0",
     "@commitlint/cli": "^8.3.5",
@@ -29,15 +24,18 @@
     "eslint-plugin-sort-destructure-keys": "^1.3.0",
     "eslint-plugin-typescript-sort-keys": "^0.2.0",
     "husky": "^4.2.3",
-    "lerna": "^3.20.2",
-    "typescript": "^3.8.3"
+    "jege": "^0.5.1",
+    "lerna": "^3.22.1",
+    "process-launch": "^0.6.1",
+    "typescript": "^3.8.3",
+    "yargs": "^15.4.1"
   },
   "scripts": {
-    "test": "node test/index.js"
+    "lerna": "npx lerna",
+    "test": "node ./internals/launcher.js contract:test"
   },
   "name": "verifiable-computing",
-  "description": "## Protocol 1. Let C be a contract, N be a set of all K nodes in the network, and a solicitor s be a node in N who wants to delegate work to other nodes. s sends makes a transaction to C with a pledge g and a public key b such that,     1. s has a pair of private and public keys that are generated using an asymmetric key encryption scheme     2. g is an amount of compensation which is to be given to a node that accomplishes work 2. Any node n of N who wants to participate in a selection round makes a transaction to C such that,     1. n makes a transaction with a sha of a random number r_i, where sha(x) is a function that outputs cryptographic hash of x     2. n makes a transaction and it needs to arrive within a window w to be examined by C 3. Given a sequence of nodes BN who made a bid within a window w, and a sequence of nodes SR who have recently worked, C creates SN, a subset of B such that the following conditions hold,     1. C creates SN only when |BN| > 1     2. 1 < |SN| < |BN|     3. A node n whose transaction comes early generally has a higher chance to be selected, with exceptions that if n is in SR it gets repositioned to the end of BN. If more than a single such node exists in BN, they are repositioned and ordered such that the least recently worked node n comes first 4. Nodes of SN make a transaction to C with r_i within a window w 5. C creates a set of integers VR and computes a random value r using gen(X) such that     1. Valid random numbers VR is a subset of a sequence R whose elements are all r_is transmitted such that an element of VR is unique     2. C computes r if and only if |VR| / |R| > THRESHOLD     3. gen(|SN|, VR) is a function that outputs an integer r such that 0 <= r < |SN| 6. C selects a node s of SN whose index is r and appends s in SR.  7. C adds a pair (x,y) into a set of work W, a binary relation such that,     1. x is an id of node n     2. y is a unique identifier of work w, which C generates 8. C adds a pair (x,y) into a set of work proof WF, a binary relation such that,     1. x is a unique identifier of work w     2. y is a public key b which s provided",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "main": "index.js",
   "directories": {
     "test": "test"
@@ -51,5 +49,9 @@
   "bugs": {
     "url": "https://github.com/eldeni/verifiable-computing/issues"
   },
-  "homepage": "https://github.com/eldeni/verifiable-computing#readme"
+  "homepage": "https://github.com/eldeni/verifiable-computing#readme",
+  "private": true,
+  "workspaces": [
+    "modules/contract"
+  ]
 }
