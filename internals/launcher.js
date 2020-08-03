@@ -5,6 +5,10 @@ const path = require('path');
 
 const log = logger('[verifiable-computing]');
 
+const paths = {
+  randgenBuildPath: path.resolve(__dirname, '../modules/randgen/build'),
+};
+
 const processDefinitions = {
   'contract:test': proc(
     'node',
@@ -16,6 +20,22 @@ const processDefinitions = {
       cwd: `./modules/contract`,
       env: {
         NODE_ENV: 'development',
+        RANDGEN_BUILD_PATH: paths.randgenBuildPath,
+      },
+      stdio: 'inherit',
+    },
+  ),
+  'randgen:build': proc(
+    'node',
+    [
+      './internals/build.js',
+      ...argv._,
+    ],
+    {
+      cwd: `./modules/randgen`,
+      env: {
+        NODE_ENV: 'development',
+        RANDGEN_BUILD_PATH: paths.randgenBuildPath,
       },
       stdio: 'inherit',
     },
@@ -35,9 +55,8 @@ function launcher() {
       processGroupDefinitions,
     });
 
-    Launcher.run({
-      process: argv.process,
-      processGroup: argv.processGroup,
+    Launcher.runInSequence({
+      order: ['randgen:build', 'contract:test'],
     });
   } catch (err) {
     log('launcher(): Error reading file', err);

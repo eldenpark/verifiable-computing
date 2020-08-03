@@ -6,11 +6,16 @@ const Web3 = require('web3');
 
 const log = logger('[contract]');
 
-exports.compile = function compile(contractsPath) {
+exports.compile = function compile(buildPath, contractsPath) {
   const sources = {};
 
+  if (!fs.existsSync(buildPath)) {
+    log('compile(): buildPath does not exist, path: %s', buildPath);
+    throw new Error('buildPath does not exist');
+  }
+
   if (!fs.existsSync(contractsPath)) {
-    log('compile(): contractsPath does not exist');
+    log('compile(): contractsPath does not exist, path: %s', contractsPath);
     throw new Error('contractsPath does not exist');
   }
 
@@ -37,8 +42,9 @@ exports.compile = function compile(contractsPath) {
     },
   };
 
+  const compileReceiptPath = path.resolve(buildPath, 'compiled.json');
   const output = JSON.parse(solc.compile(JSON.stringify(input)));
-  log('compile(): solc finish compilation: %j', output);
+  fs.writeFileSync(compileReceiptPath, JSON.stringify(output, null, 2));
 
   output.errors.forEach((error) => {
     console.log(error.formattedMessage);
@@ -46,6 +52,14 @@ exports.compile = function compile(contractsPath) {
       output.hasError = true;
     }
   });
+
+  if (!output.hasError) {
+    for (let contractFile in output.contracts) {
+      for (let contract in output.contracts[contractFile]) {
+        log('compile(): contract compiled, name: %s, at file: %s', contract, contractFile);
+      }
+    }
+  }
 
   return output;
 }

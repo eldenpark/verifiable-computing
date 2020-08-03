@@ -1,14 +1,18 @@
 const fs = require("fs");
 const logger = require('jege/server').logger;
 const path = require('path');
-const { compile, deploy } = require('./deployUtils');
 const Web3 = require('web3');
+
+const randgen = require(process.env.RANDGEN_BUILD_PATH);
+
+const { compile, deploy } = require('./ethdev');
 
 const log = logger('[contract]');
 
 (async function main() {
+  const buildPath = path.resolve(__dirname, '../build');
   const contractPath = path.resolve(__dirname, '../contracts');
-  const { hasError, contracts } = compile(contractPath);
+  const { hasError, contracts } = compile(buildPath, contractPath);
 
   if (!hasError) {
     const endpoint = 'ws://localhost:7545';
@@ -38,6 +42,7 @@ const log = logger('[contract]');
 
     console.log('receipt of firstcall of requestDelegate()', b)
     console.log('receipt of secondcall, ', bb)
+    randgen.default();
   } else {
     log('main(): solc compilation has error');
   }

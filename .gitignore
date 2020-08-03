@@ -238,3 +238,6 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/windows,linux,osx,node,visualstudiocode,vim,c++,rust,pure
 
 __temp/
+
+build/*
+!build/.gitkeep
