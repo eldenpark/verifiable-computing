@@ -2,5 +2,10 @@
   "name": "randgen",
   "version": "0.0.1",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "cryptico": "^1.0.2",
+    "web3": "^1.2.11",
+    "yargs": "^15.4.1"
+  }
 }

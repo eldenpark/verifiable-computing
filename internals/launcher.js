@@ -6,6 +6,7 @@ const path = require('path');
 const log = logger('[verifiable-computing]');
 
 const paths = {
+  contractBuildPath: path.resolve(__dirname, '../modules/contract/build'),
   randgenBuildPath: path.resolve(__dirname, '../modules/randgen/build'),
 };
 
@@ -19,8 +20,10 @@ const processDefinitions = {
     {
       cwd: `./modules/contract`,
       env: {
+        CONTRACT_BUILD_PATH: paths.contractBuildPath,
+        ETHEREUM_ENDPOINT: 'ws://localhost:7545',
         NODE_ENV: 'development',
-        RANDGEN_BUILD_PATH: paths.randgenBuildPath,
+        RANDGEN_BIN: `node ${paths.randgenBuildPath}/index.js`,
       },
       stdio: 'inherit',
     },

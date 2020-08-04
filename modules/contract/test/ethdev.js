@@ -19,6 +19,8 @@ exports.compile = function compile(buildPath, contractsPath) {
     throw new Error('contractsPath does not exist');
   }
 
+  log('compile(): buildPath: %s, contractsPath:%s', buildPath, contractsPath);
+
   fs.readdirSync(contractsPath)
     .forEach((contract) => {
       if (contract.endsWith('.sol')) {
