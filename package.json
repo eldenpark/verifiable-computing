@@ -54,6 +54,8 @@
   "homepage": "https://github.com/eldeni/verifiable-computing#readme",
   "private": true,
   "workspaces": [
-    "modules/contract"
+    "modules/contract",
+    "modules/integration-test",
+    "modules/randgen"
   ]
 }

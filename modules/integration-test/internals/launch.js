@@ -2,9 +2,8 @@ const { argv } = require('yargs');
 const { logger } = require('jege/server');
 
 const babelRc = require('./.babelrc');
-const { gulp } = require('./build');
 
-const log = logger('[contract]');
+const log = logger('[integration-test]');
 
 require('@babel/register')({
   ...babelRc,
@@ -12,7 +11,10 @@ require('@babel/register')({
 });
 
 function launch() {
-  log('CURRENTLY_NOT_USED launch(): argv: %j', argv);
+  log('launch(): argv: %j', argv);
+
+  const test = require('../lib/integration-test').default;
+  test();
 }
 
 if (require.main === module) {

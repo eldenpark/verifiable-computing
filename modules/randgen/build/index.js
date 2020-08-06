@@ -17,35 +17,44 @@ const fs_1 = __importDefault(require("fs"));
 const server_1 = require("jege/server");
 const web3_1 = __importDefault(require("web3"));
 const log = server_1.logger('[randgen]');
-function delegate() {
+function getContract(ethereumEndpoint, contractBuildFilePath, contractFileName, contractName, contractAddress) {
+    const web3 = new web3_1.default();
+    web3.setProvider(new web3_1.default.providers.WebsocketProvider(ethereumEndpoint));
+    const { contracts } = JSON.parse(fs_1.default.readFileSync(contractBuildFilePath)
+        .toString());
+    const abi = contracts[contractFileName][contractName].abi;
+    const contract = new web3.eth.Contract(abi, contractAddress);
+    return contract;
+}
+function delegate(opts) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { contractBuildPath, contractAddress, myAddress, contractFileName, contractName, ethereumEndpoint, } = yargs_1.argv;
+        const { contractBuildFilePath, contractAddress, myAddress, contractFileName, contractName, ethereumEndpoint, } = opts;
         log('delegate(): contractBuildPath: %s, contractAddress: %s, myAddress: %s,'
-            + 'contractFileName: %s, contractName: %s, ethereumEndpoint: %s', contractBuildPath, contractAddress, myAddress, contractFileName, contractName, ethereumEndpoint);
-        const web3 = new web3_1.default();
-        web3.setProvider(new web3_1.default.providers.WebsocketProvider(ethereumEndpoint));
-        const { contracts } = JSON.parse(fs_1.default.readFileSync(contractBuildPath)
-            .toString());
-        const abi = contracts[contractFileName][contractName].abi;
-        const contract = new web3.eth.Contract(abi, contractAddress);
-        const delegated = yield contract.methods.requestDelegate(myAddress, 123).send({
-            from: myAddress,
-        });
-        log('delegate(): delegated: %s', delegated);
+            + 'contractFileName: %s, contractName: %s, ethereumEndpoint: %s', contractBuildFilePath, contractAddress, myAddress, contractFileName, contractName, ethereumEndpoint);
+        const contract = getContract(ethereumEndpoint, contractBuildFilePath, contractFileName, contractName, contractAddress);
+        const delegated = yield contract.methods.requestDelegate(myAddress, 123)
+            .send({ from: myAddress });
+        log('delegate(): delegated: %j', delegated);
     });
 }
-function work() {
-    log('work()');
+function work(opts) {
+    const { contractBuildFilePath, contractAddress, myAddress, contractFileName, contractName, ethereumEndpoint, } = opts;
+    log('work(): contractBuildFilePath: %s, contractAddress: %s, myAddress: %s,'
+        + 'contractFileName: %s, contractName: %s, ethereumEndpoint: %s', contractBuildFilePath, contractAddress, myAddress, contractFileName, contractName, ethereumEndpoint);
+    const contract = getContract(ethereumEndpoint, contractBuildFilePath, contractFileName, contractName, contractAddress);
+    contract.events.RoundSetup().on('data', (e) => {
+        console.log('event handler', e);
+    });
 }
-function main() {
+(function main() {
     return __awaiter(this, void 0, void 0, function* () {
         log('main(): argv: %j', yargs_1.argv);
         try {
             if (yargs_1.argv._.includes('work')) {
-                work();
+                work(yargs_1.argv);
             }
             else if (yargs_1.argv._.includes('delegate')) {
-                yield delegate();
+                delegate(yargs_1.argv);
             }
         }
         catch (err) {
@@ -53,7 +62,4 @@ function main() {
         }
         return 0;
     });
-}
-if (require.main === module) {
-    main();
-}
+})();

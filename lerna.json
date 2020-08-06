@@ -1,7 +1,9 @@
 {
   "npmClient": "yarn",
   "packages": [
-    "modules/contract"
+    "modules/contract",
+    "modules/integration-test",
+    "modules/randgen"
   ],
   "version": "0.0.0",
   "useWorkspaces": true

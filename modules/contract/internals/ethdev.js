@@ -2,7 +2,6 @@ const fs = require("fs");
 const logger = require('jege/server').logger;
 const path = require('path');
 const solc = require('solc');
-const Web3 = require('web3');
 
 const log = logger('[contract]');
 
@@ -25,7 +24,7 @@ exports.compile = function compile(buildPath, contractsPath) {
     .forEach((contract) => {
       if (contract.endsWith('.sol')) {
         const contractPath = path.resolve(contractsPath, contract);
-        console.log('compile(): collecting contract, detected at: %s', contractPath);
+        log('compile(): collecting contract, detected at: %s', contractPath);
         sources[contract] = {
           content: fs.readFileSync(contractPath).toString(),
         };
@@ -58,7 +57,8 @@ exports.compile = function compile(buildPath, contractsPath) {
   if (!output.hasError) {
     for (let contractFile in output.contracts) {
       for (let contract in output.contracts[contractFile]) {
-        log('compile(): contract compiled, name: %s, at file: %s', contract, contractFile);
+        log('compile(): contract compiled, name: %s, at file: %s',
+            contract, contractFile);
       }
     }
   }

@@ -7,23 +7,44 @@ const log = logger('[verifiable-computing]');
 
 const paths = {
   contractBuildPath: path.resolve(__dirname, '../modules/contract/build'),
+  contractsPath: path.resolve(__dirname, '../modules/contract/contracts'),
   randgenBuildPath: path.resolve(__dirname, '../modules/randgen/build'),
 };
 
 const processDefinitions = {
-  'contract:test': proc(
+  'contract:build': proc(
     'node',
     [
-      './test/index.js',
+      './internals/build.js',
       ...argv._,
     ],
     {
       cwd: `./modules/contract`,
       env: {
+        CONTRACTS_PATH: paths.contractsPath,
         CONTRACT_BUILD_PATH: paths.contractBuildPath,
         ETHEREUM_ENDPOINT: 'ws://localhost:7545',
         NODE_ENV: 'development',
-        RANDGEN_BIN: `node ${paths.randgenBuildPath}/index.js`,
+        RANDGEN_BIN: `node`,
+        RANDGEN_BIN_PATH: path.resolve(paths.randgenBuildPath, 'index.js'),
+      },
+      stdio: 'inherit',
+    },
+  ),
+  'integration-test': proc(
+    'node',
+    [
+      './internals/launch.js',
+      ...argv._,
+    ],
+    {
+      cwd: `./modules/integration-test`,
+      env: {
+        CONTRACT_BUILD_PATH: paths.contractBuildPath,
+        ETHEREUM_ENDPOINT: 'ws://localhost:7545',
+        NODE_ENV: 'development',
+        RANDGEN_BIN: `node`,
+        RANDGEN_BIN_PATH: `${paths.randgenBuildPath}/index.js`,
       },
       stdio: 'inherit',
     },
@@ -46,7 +67,7 @@ const processDefinitions = {
 };
 
 const processGroupDefinitions = {
-  default: ['contract:test'],
+  default: ['integration-test'],
 };
 
 function launcher() {
@@ -59,7 +80,7 @@ function launcher() {
     });
 
     Launcher.runInSequence({
-      order: ['randgen:build', 'contract:test'],
+      order: ['contract:build', 'randgen:build', 'integration-test'],
     });
   } catch (err) {
     log('launcher(): Error reading file', err);
