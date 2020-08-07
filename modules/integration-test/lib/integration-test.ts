@@ -1,7 +1,7 @@
-const childProcess = require('child_process');
-const fs = require("fs");
-const logger = require('jege/server').logger; const path = require('path');
-const Web3 = require('web3');
+import childProcess from 'child_process';
+import { deploy } from 'ethdev';
+import { logger } from 'jege/server';
+import path from 'path';
 
 const CONTRACT_FILE_NAME = 'Rand.sol';
 const CONTRACT_NAME = 'Rand';
@@ -22,32 +22,6 @@ const log = logger('[contract]');
       process.env.RANDGEN_BIN, process.env.RANDGEN_BIN_PATH);
 })();
 
-async function deploy(contractBuildFilePath, endpoint)
-{
-  const { contracts } = require(contractBuildFilePath);
-  log('deploy(): ethereum endpoint: %s', endpoint);
-
-  const web3 = new Web3();
-  web3.setProvider(new Web3.providers.WebsocketProvider(endpoint));
-  const [acc1, acc2, acc3, ...accounts] = await web3.eth.getAccounts();
-
-  const contractFile = contracts[CONTRACT_FILE_NAME];
-  const abi = contractFile[CONTRACT_NAME].abi;
-  const code = contractFile[CONTRACT_NAME].evm.bytecode.object;
-  const contract = new web3.eth.Contract(abi);
-  const payload = { data: code };
-
-  const con = await contract.deploy(payload).send({
-    from: acc2, gas: 6721975, gasPrice: 20000000000});
-
-  log('deploy(): Rand deployed, at address: %s', con.options.address);
-
-  return {
-    con,
-    web3,
-  };
-}
-
 function delay(ms = 1000)
 {
   return new Promise((resolve) => {
@@ -62,7 +36,8 @@ async function main()
 
   log('main(): contractBuildFilePath: %s', contractBuildFilePath);
   const endpoint = process.env.ETHEREUM_ENDPOINT;
-  const { con, web3 } = await deploy(contractBuildFilePath, endpoint);
+  const { con, web3 } = await deploy(contractBuildFilePath, endpoint,
+                                     CONTRACT_FILE_NAME, CONTRACT_NAME);
   const [acc1, acc2, acc3, acc4] = await web3.eth.getAccounts();
 
   const { RANDGEN_BIN, RANDGEN_BIN_PATH } = process.env;

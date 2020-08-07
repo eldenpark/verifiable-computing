@@ -55,6 +55,7 @@
   "private": true,
   "workspaces": [
     "modules/contract",
+    "modules/ethdev",
     "modules/integration-test",
     "modules/randgen"
   ]

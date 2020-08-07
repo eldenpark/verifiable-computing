@@ -8,6 +8,7 @@ const log = logger('[verifiable-computing]');
 const paths = {
   contractBuildPath: path.resolve(__dirname, '../modules/contract/build'),
   contractsPath: path.resolve(__dirname, '../modules/contract/contracts'),
+  ethdevBuildPath: path.resolve(__dirname, '../modules/ethdev/lib'),
   randgenBuildPath: path.resolve(__dirname, '../modules/randgen/build'),
 };
 
@@ -27,6 +28,20 @@ const processDefinitions = {
         NODE_ENV: 'development',
         RANDGEN_BIN: `node`,
         RANDGEN_BIN_PATH: path.resolve(paths.randgenBuildPath, 'index.js'),
+      },
+      stdio: 'inherit',
+    },
+  ),
+  'ethdev:build': proc(
+    'node',
+    [
+      './internals/build.js',
+      ...argv._,
+    ],
+    {
+      cwd: `./modules/ethdev`,
+      env: {
+        ETHDEV_BUILD_PATH: paths.ethdevBuildPath,
       },
       stdio: 'inherit',
     },
@@ -61,6 +76,7 @@ const processDefinitions = {
       env: {
         NODE_ENV: 'development',
         RANDGEN_BUILD_PATH: paths.randgenBuildPath,
+        WORKS_PATH: path.resolve(__dirname, '../modules/randgen/works'),
       },
       stdio: 'inherit',
     },
@@ -71,15 +87,17 @@ const processGroupDefinitions = {
   default: ['integration-test'],
 };
 
-function launcher() {
+function launcher()
+{
   try {
     log('launcher(): argv: %j', argv);
 
     let order;
     if (argv.c) {
-      order = ['contract:build', 'randgen:build', 'integration-test'];
+      order = ['contract:build', 'ethdev:build', 'randgen:build',
+               'integration-test'];
     } else {
-      order = ['randgen:build', 'integration-test'];
+      order = ['ethdev:build', 'randgen:build', 'integration-test'];
     }
 
     const Launcher = createLauncher({

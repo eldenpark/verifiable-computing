@@ -5,20 +5,17 @@ const gulp = require('gulp');
 const path = require('path');
 const ts = require('gulp-typescript');
 
-const buildLog = buildLogger('[randgen]');
+const buildLog = buildLogger('[ethdev]');
 const tsProject = ts.createProject('tsconfig.json');
 
 const paths = {
-  build: process.env.RANDGEN_BUILD_PATH,
-  works: process.env.WORKS_PATH,
+  build: process.env.ETHDEV_BUILD_PATH,
 };
 
 gulp.task('clean', () => {
   const cleanPaths = [
     `${paths.build}/**/*`,
     `!${paths.build}/.gitkeep`,
-    `${paths.works}/**/*`,
-    `!${paths.works}/.gitkeep`,
   ];
 
   buildLog('clean', 'cleanPaths: %j', cleanPaths);
