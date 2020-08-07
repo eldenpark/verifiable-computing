@@ -5,10 +5,12 @@ contract Rand {
 	bool isOpen;
 	address[] worked; // record of who has worked before
 	address[] bids;
+	string workInfo;
 	mapping (address => string) pledges;
 
 	event RoundSetup(string value);
-	event RandCreate(uint256 rand, uint bidderIdx, address chosen);
+	event RandCreate(uint256 rand, uint bidderIdx, address chosen,
+									 string workInfo);
 	event Log(address addr, string val);
 
 	constructor()
@@ -21,8 +23,8 @@ contract Rand {
 	public payable
 	{
 		emit Log(msg.sender, message);
-
 		emit RoundSetup(message);
+		workInfo = message;
 	}
 
 	function bid(string memory pubKey)
@@ -36,7 +38,7 @@ contract Rand {
 			uint rand = stringToUint(pubKey);
 			uint bidderIdx = rand % 3;
 			address chosen = bids[bidderIdx];
-			emit RandCreate(rand, bidderIdx, chosen);
+			emit RandCreate(rand, bidderIdx, chosen, workInfo);
 		}
 		return true;
 	}

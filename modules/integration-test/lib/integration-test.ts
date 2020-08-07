@@ -76,6 +76,7 @@ async function main()
       `--contractAddress=${con.options.address}`,
       `--myAddress=${acc2}`,
       `--ethereumEndpoint=${process.env.ETHEREUM_ENDPOINT}`,
+      `--worksPath=${process.env.WORKS_PATH}`,
       'work',
     ],
     { stdio: [ process.stdin, process.stdout, process.stderr ]});
@@ -91,6 +92,7 @@ async function main()
       `--contractAddress=${con.options.address}`,
       `--myAddress=${acc3}`,
       `--ethereumEndpoint=${process.env.ETHEREUM_ENDPOINT}`,
+      `--worksPath=${process.env.WORKS_PATH}`,
       'work',
     ],
     { stdio: [ process.stdin, process.stdout, process.stderr ]});
@@ -106,6 +108,7 @@ async function main()
       `--contractAddress=${con.options.address}`,
       `--myAddress=${acc4}`,
       `--ethereumEndpoint=${process.env.ETHEREUM_ENDPOINT}`,
+      `--worksPath=${process.env.WORKS_PATH}`,
       'work',
     ],
     { stdio: [ process.stdin, process.stdout, process.stderr ]});
@@ -123,11 +126,12 @@ async function main()
       `--contractAddress=${con.options.address}`,
       `--myAddress=${acc1}`,
       `--ethereumEndpoint=${process.env.ETHEREUM_ENDPOINT}`,
+      `--worksPath=${process.env.WORKS_PATH}`,
       'delegate',
     ],
     { stdio: [ process.stdin, process.stdout, process.stderr ]});
 
-  log('main(): spawned child process [delegator], pid: %s', delegator1.pid);
+  log('main(): spawned child process [delegator1], pid: %s', delegator1.pid);
 
   return 0;
 };

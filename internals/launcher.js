@@ -45,6 +45,7 @@ const processDefinitions = {
         NODE_ENV: 'development',
         RANDGEN_BIN: `node`,
         RANDGEN_BIN_PATH: `${paths.randgenBuildPath}/index.js`,
+        WORKS_PATH: path.resolve(__dirname, '../modules/randgen/works'),
       },
       stdio: 'inherit',
     },
