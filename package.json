@@ -34,7 +34,7 @@
   },
   "scripts": {
     "lerna": "npx lerna",
-    "test": "node ./internals/launcher.js contract:test"
+    "test": "node ./internals/launcher.js"
   },
   "name": "verifiable-computing",
   "version": "0.0.1",

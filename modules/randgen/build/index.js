@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const yargs_1 = require("yargs");
 const fs_1 = __importDefault(require("fs"));
 const server_1 = require("jege/server");
+const node_rsa_1 = __importDefault(require("node-rsa"));
 const web3_1 = __importDefault(require("web3"));
 const log = server_1.logger('[randgen]');
 function getContract(ethereumEndpoint, contractBuildFilePath, contractFileName, contractName, contractAddress) {
@@ -32,9 +33,10 @@ function delegate(opts) {
         log('delegate(): contractBuildPath: %s, contractAddress: %s, myAddress: %s,'
             + 'contractFileName: %s, contractName: %s, ethereumEndpoint: %s', contractBuildFilePath, contractAddress, myAddress, contractFileName, contractName, ethereumEndpoint);
         const contract = getContract(ethereumEndpoint, contractBuildFilePath, contractFileName, contractName, contractAddress);
-        const delegated = yield contract.methods.requestDelegate(myAddress, 123)
+        const requestDelegate = yield contract.methods
+            .requestDelegate("some message")
             .send({ from: myAddress });
-        log('delegate(): delegated: %j', delegated);
+        log('delegate(): requestDelegate receipt: %j', requestDelegate);
     });
 }
 function work(opts) {
@@ -42,13 +44,32 @@ function work(opts) {
     log('work(): contractBuildFilePath: %s, contractAddress: %s, myAddress: %s,'
         + 'contractFileName: %s, contractName: %s, ethereumEndpoint: %s', contractBuildFilePath, contractAddress, myAddress, contractFileName, contractName, ethereumEndpoint);
     const contract = getContract(ethereumEndpoint, contractBuildFilePath, contractFileName, contractName, contractAddress);
-    contract.events.RoundSetup().on('data', (e) => {
-        console.log('event handler', e);
+    let publicKey;
+    let privateKey;
+    contract.events.Log().on('data', (e) => {
+        log('on(): Log: %j', e);
     });
+    contract.events.RandCreate().on('data', (e) => {
+        log('on(): RandCreate: %j', e);
+        if (e.returnValues.chosen === myAddress) {
+            console.log(11111);
+        }
+    });
+    contract.events.RoundSetup().on('data', (e) => __awaiter(this, void 0, void 0, function* () {
+        log('on(): RoundSetup: %j', e);
+        const key = new node_rsa_1.default({ b: 512 });
+        publicKey = key.exportKey('public').toString();
+        privateKey = key.exportKey('private').toString();
+        log('on(): RoundSetup: publicKey: %s, privateKey: %s', publicKey, privateKey);
+        const bid = yield contract.methods.bid(publicKey)
+            .send({ from: myAddress, gas: 6721975, gasPrice: '30000000' });
+        log('on(): RoundSetup: bid receipt, %j', bid);
+    }));
 }
 (function main() {
     return __awaiter(this, void 0, void 0, function* () {
         log('main(): argv: %j', yargs_1.argv);
+        log('main(): processId: %s', process.pid);
         try {
             if (yargs_1.argv._.includes('work')) {
                 work(yargs_1.argv);

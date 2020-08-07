@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "cryptico": "^1.0.2",
+    "node-rsa": "^1.1.1",
     "web3": "^1.2.11",
     "yargs": "^15.4.1"
   },

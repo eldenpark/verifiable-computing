@@ -74,13 +74,20 @@ function launcher() {
   try {
     log('launcher(): argv: %j', argv);
 
+    let order;
+    if (argv.c) {
+      order = ['contract:build', 'randgen:build', 'integration-test'];
+    } else {
+      order = ['randgen:build', 'integration-test'];
+    }
+
     const Launcher = createLauncher({
       processDefinitions,
       processGroupDefinitions,
     });
 
     Launcher.runInSequence({
-      order: ['contract:build', 'randgen:build', 'integration-test'],
+      order
     });
   } catch (err) {
     log('launcher(): Error reading file', err);
