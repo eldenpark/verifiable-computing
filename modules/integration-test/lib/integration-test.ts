@@ -3,24 +3,9 @@ import { deploy } from 'ethdev';
 import { logger } from 'jege/server';
 import path from 'path';
 
-const CONTRACT_FILE_NAME = 'Rand.sol';
-const CONTRACT_NAME = 'Rand';
+import pretest from './pretest';
 
-const log = logger('[contract]');
-
-(function checkRandgenBin()
-{
-  if (process.env.RANDGEN_BIN === undefined) {
-    throw new Error('RANDGEN_BIN is not defined');
-  }
-
-  if (process.env.RANDGEN_BIN_PATH === undefined) {
-    throw new Error('RANDGEN_BIN_PATH is not defined');
-  }
-
-  log('checkRandgenBin(): randgen bin: %s, randgen bin path: %s',
-      process.env.RANDGEN_BIN, process.env.RANDGEN_BIN_PATH);
-})();
+const log = logger('[integration-test]');
 
 function delay(ms = 1000)
 {
@@ -31,16 +16,19 @@ function delay(ms = 1000)
 
 async function main()
 {
-  const contractBuildFilePath = path.resolve(process.env.CONTRACT_BUILD_PATH,
-                                    'compiled.json');
+  pretest();
 
+  const { CONTRACT_BUILD_PATH, CONTRACT_FILE_NAME, CONTRACT_NAME,
+          ETHEREUM_ENDPOINT, RANDGEN_BIN, RANDGEN_BIN_PATH,
+          WORKS_PATH, } = process.env;
+
+  const contractBuildFilePath = path.resolve(CONTRACT_BUILD_PATH,
+                                             'compiled.json');
   log('main(): contractBuildFilePath: %s', contractBuildFilePath);
-  const endpoint = process.env.ETHEREUM_ENDPOINT;
-  const { con, web3 } = await deploy(contractBuildFilePath, endpoint,
+
+  const { con, web3 } = await deploy(contractBuildFilePath, ETHEREUM_ENDPOINT,
                                      CONTRACT_FILE_NAME, CONTRACT_NAME);
   const [acc1, acc2, acc3, acc4] = await web3.eth.getAccounts();
-
-  const { RANDGEN_BIN, RANDGEN_BIN_PATH } = process.env;
 
   const worker1 = childProcess.spawn(RANDGEN_BIN,
     [
@@ -50,8 +38,8 @@ async function main()
       `--contractName=${CONTRACT_NAME}`,
       `--contractAddress=${con.options.address}`,
       `--myAddress=${acc2}`,
-      `--ethereumEndpoint=${process.env.ETHEREUM_ENDPOINT}`,
-      `--worksPath=${process.env.WORKS_PATH}`,
+      `--ethereumEndpoint=${ETHEREUM_ENDPOINT}`,
+      `--worksPath=${WORKS_PATH}`,
       'work',
     ],
     { stdio: [ process.stdin, process.stdout, process.stderr ]});
@@ -66,8 +54,8 @@ async function main()
       `--contractName=${CONTRACT_NAME}`,
       `--contractAddress=${con.options.address}`,
       `--myAddress=${acc3}`,
-      `--ethereumEndpoint=${process.env.ETHEREUM_ENDPOINT}`,
-      `--worksPath=${process.env.WORKS_PATH}`,
+      `--ethereumEndpoint=${ETHEREUM_ENDPOINT}`,
+      `--worksPath=${WORKS_PATH}`,
       'work',
     ],
     { stdio: [ process.stdin, process.stdout, process.stderr ]});
@@ -82,13 +70,13 @@ async function main()
       `--contractName=${CONTRACT_NAME}`,
       `--contractAddress=${con.options.address}`,
       `--myAddress=${acc4}`,
-      `--ethereumEndpoint=${process.env.ETHEREUM_ENDPOINT}`,
-      `--worksPath=${process.env.WORKS_PATH}`,
+      `--ethereumEndpoint=${ETHEREUM_ENDPOINT}`,
+      `--worksPath=${WORKS_PATH}`,
       'work',
     ],
     { stdio: [ process.stdin, process.stdout, process.stderr ]});
 
-  log('main(): spawned child process [worker3], pid: %s', worker2.pid);
+  log('main(): spawned child process [worker3], pid: %s', worker3.pid);
 
   await delay(1000);
 
@@ -100,8 +88,8 @@ async function main()
       `--contractName=${CONTRACT_NAME}`,
       `--contractAddress=${con.options.address}`,
       `--myAddress=${acc1}`,
-      `--ethereumEndpoint=${process.env.ETHEREUM_ENDPOINT}`,
-      `--worksPath=${process.env.WORKS_PATH}`,
+      `--ethereumEndpoint=${ETHEREUM_ENDPOINT}`,
+      `--worksPath=${WORKS_PATH}`,
       'delegate',
     ],
     { stdio: [ process.stdin, process.stdout, process.stderr ]});

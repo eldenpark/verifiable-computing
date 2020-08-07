@@ -13,8 +13,17 @@ require('@babel/register')({
 function launch() {
   log('launch(): argv: %j', argv);
 
-  const test = require('../lib/integration-test').default;
-  test();
+  let test;
+  try {
+    if (argv.randgen) {
+      test = require('../lib/randgen-standalone').default;
+    } else {
+      test = require('../lib/integration-test').default;
+    }
+    test();
+  } catch (err) {
+    log('main(): error: %s', err);
+  }
 }
 
 if (require.main === module) {

@@ -50,11 +50,16 @@ const processDefinitions = {
     'node',
     [
       './internals/launch.js',
+      `--randgen=${argv.randgen}`,
+      `--mode=${argv.mode}`,
+      `--addressId=${argv.addressId}`,
       ...argv._,
     ],
     {
       cwd: `./modules/integration-test`,
       env: {
+        CONTRACT_FILE_NAME: 'Rand.sol',
+        CONTRACT_NAME: 'Rand',
         CONTRACT_BUILD_PATH: paths.contractBuildPath,
         ETHEREUM_ENDPOINT: 'ws://localhost:7545',
         NODE_ENV: 'development',
@@ -92,7 +97,7 @@ function launcher()
   try {
     log('launcher(): argv: %j', argv);
 
-    let order;
+    let order = [];
     if (argv.c) {
       order = ['contract:build', 'ethdev:build', 'randgen:build',
                'integration-test'];

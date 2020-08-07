@@ -34,6 +34,7 @@
   },
   "scripts": {
     "lerna": "npx lerna",
+    "randgen": "node ./internals/launcher.js --randgen",
     "test": "node ./internals/launcher.js"
   },
   "name": "verifiable-computing",

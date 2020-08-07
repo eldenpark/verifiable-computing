@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import Web3 from 'web3';
 
 import { logger } from 'jege/server';
