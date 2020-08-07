@@ -135,10 +135,12 @@ async function work(opts)
   log('main(): processId: %s', process.pid);
 
   try {
-    if (argv._.includes('work')) {
+    if (argv.mode === 'work') {
       work(argv);
-    } else if (argv._.includes('delegate')) {
+    } else if (argv.mode === 'delegate') {
       delegate(argv);
+    } else {
+      throw new Error('mode is not properly set up');
     }
   } catch (err) {
     log('main(): error: %s', err);

@@ -4,10 +4,11 @@
     "web3": "^1.2.11"
   },
   "devDependencies": {
+    "ethdev": "^0.0.0",
     "del": "^4.1.1",
     "jege": "^0.5.1"
   },
-  "name": "verifiable-computing",
+  "name": "contract",
   "version": "1.0.0",
   "main": "index.js",
   "private": true

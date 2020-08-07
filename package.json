@@ -33,9 +33,11 @@
     "yargs": "^15.4.1"
   },
   "scripts": {
+    "build": "node ./internals/launcher.js --order=build",
+    "contract:deploy": "node ./internals/launcher.js --process=contract:deploy",
+    "launch": "node ./internals/launcher.js",
     "lerna": "npx lerna",
-    "randgen": "node ./internals/launcher.js --randgen",
-    "test": "node ./internals/launcher.js"
+    "randgen": "node ./internals/launcher.js --process=randgen"
   },
   "name": "verifiable-computing",
   "version": "0.0.1",

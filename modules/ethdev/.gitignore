@@ -1,2 +1,2 @@
-envs/*
-!envs/.gitkeep
+deploys/*
+!deploys/.gitkeep

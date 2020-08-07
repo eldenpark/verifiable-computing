@@ -15,11 +15,7 @@ function launch() {
 
   let test;
   try {
-    if (argv.randgen) {
-      test = require('../lib/randgen-standalone').default;
-    } else {
-      test = require('../lib/integration-test').default;
-    }
+    test = require('../lib/randgen-standalone').default;
     test();
   } catch (err) {
     log('main(): error: %s', err);
