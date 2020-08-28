@@ -1,7 +1,7 @@
 const AWS = require('aws-sdk');
 const { logger } = require('jege/server');
 
-const log = logger('[integration-test]');
+const log = logger('[randgen]');
 
 AWS.config.update({ region: 'us-west-2' });
 

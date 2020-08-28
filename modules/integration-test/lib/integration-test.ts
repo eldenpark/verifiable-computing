@@ -40,7 +40,8 @@ async function main()
       `--myAddress=${acc2}`,
       `--ethereumEndpoint=${ETHEREUM_ENDPOINT}`,
       `--worksPath=${WORKS_PATH}`,
-      'work',
+      `--name=1`,
+      `--mode=work`,
     ],
     { stdio: [ process.stdin, process.stdout, process.stderr ]});
 
@@ -56,7 +57,8 @@ async function main()
       `--myAddress=${acc3}`,
       `--ethereumEndpoint=${ETHEREUM_ENDPOINT}`,
       `--worksPath=${WORKS_PATH}`,
-      'work',
+      `--name=2`,
+      `--mode=work`,
     ],
     { stdio: [ process.stdin, process.stdout, process.stderr ]});
 
@@ -72,11 +74,29 @@ async function main()
       `--myAddress=${acc4}`,
       `--ethereumEndpoint=${ETHEREUM_ENDPOINT}`,
       `--worksPath=${WORKS_PATH}`,
-      'work',
+      `--name=3`,
+      `--mode=work`,
     ],
     { stdio: [ process.stdin, process.stdout, process.stderr ]});
 
   log('main(): spawned child process [worker3], pid: %s', worker3.pid);
+
+  const worker4 = childProcess.spawn(RANDGEN_BIN,
+    [
+      RANDGEN_BIN_PATH,
+      `--contractBuildFilePath=${contractBuildFilePath}`,
+      `--contractFileName=${CONTRACT_FILE_NAME}`,
+      `--contractName=${CONTRACT_NAME}`,
+      `--contractAddress=${con.options.address}`,
+      `--myAddress=${acc4}`,
+      `--ethereumEndpoint=${ETHEREUM_ENDPOINT}`,
+      `--worksPath=${WORKS_PATH}`,
+      `--name=4`,
+      `--mode=work`,
+    ],
+    { stdio: [ process.stdin, process.stdout, process.stderr ]});
+
+  log('main(): spawned child process [worker4], pid: %s', worker4.pid);
 
   await delay(1000);
 
@@ -90,7 +110,7 @@ async function main()
       `--myAddress=${acc1}`,
       `--ethereumEndpoint=${ETHEREUM_ENDPOINT}`,
       `--worksPath=${WORKS_PATH}`,
-      'delegate',
+      `--mode=delegate`,
     ],
     { stdio: [ process.stdin, process.stdout, process.stderr ]});
 

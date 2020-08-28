@@ -47,12 +47,14 @@ exports.compile = function compile(buildPath, contractsPath) {
   const output = JSON.parse(solc.compile(JSON.stringify(input)));
   fs.writeFileSync(compileReceiptPath, JSON.stringify(output, null, 2));
 
-  output.errors.forEach((error) => {
-    console.log(error.formattedMessage);
-    if (error.severity === 'error') {
-      output.hasError = true;
-    }
-  });
+  if (output.errors) {
+    output.errors.forEach((error) => {
+      console.log(error.formattedMessage);
+      if (error.severity === 'error') {
+        output.hasError = true;
+      }
+    });
+  }
 
   if (!output.hasError) {
     for (let contractFile in output.contracts) {

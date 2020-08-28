@@ -27,12 +27,13 @@ function getContract(ethereumEndpoint, contractBuildFilePath, contractFileName,
 async function delegate(opts)
 {
   const { contractBuildFilePath, contractAddress, myAddress, contractFileName,
-          contractName, ethereumEndpoint, } = opts;
+          contractName, ethereumEndpoint, name, } = opts;
 
   log('delegate(): contractBuildPath: %s, contractAddress: %s, myAddress: %s,'
-      + 'contractFileName: %s, contractName: %s, ethereumEndpoint: %s',
+      + ' contractFileName: %s, contractName: %s, ethereumEndpoint: %s',
+      + ' name: %s',
       contractBuildFilePath, contractAddress, myAddress, contractFileName,
-      contractName, ethereumEndpoint);
+      contractName, ethereumEndpoint, name);
 
   const contract = getContract(ethereumEndpoint, contractBuildFilePath,
                                contractFileName, contractName, contractAddress);
@@ -55,35 +56,53 @@ async function delegate(opts)
   const stopped = await node.stop();
   log('delegate(): ipfs, stopped: %s', stopped);
 
-  const requestDelegate = await contract.methods
-    .requestDelegate("QmRZG4AnWNk4yop91Zy4D2mNzyQ8s2RhXLfwhDn4je7pfk")
-    .send({ from: myAddress });
-    log('delegate(): requestDelegate receipt: %j', requestDelegate);
+  try {
+    const requestDelegate = await contract.methods
+      .requestDelegate("QmRZG4AnWNk4yop91Zy4D2mNzyQ8s2RhXLfwhDn4je7pfk")
+      .send({ from: myAddress, gas: 6721975, gasPrice: '30000000' });
+      log('delegate(): requestDelegate receipt: %s',
+          requestDelegate.transactionHash);
+  } catch (err) {
+    log('delegate(): request delegate error: %s', err);
+  }
 }
 
 async function work(opts)
 {
+  const privKey = Math.floor(Math.random() * 9) + 1;
+  const pubKey =  10 - privKey;
+
   const { contractBuildFilePath, contractAddress, myAddress, contractFileName,
-    contractName, ethereumEndpoint, worksPath, } = opts;
+    contractName, ethereumEndpoint, name, worksPath, } = opts;
 
   log('work(): contractBuildFilePath: %s, contractAddress: %s, myAddress: %s,'
       + ' contractFileName: %s, contractName: %s, ethereumEndpoint: %s'
-      + ' worksPath: %s',
+      + ' name: %s, worksPath: %s, privKey: %s',
       contractBuildFilePath, contractAddress, myAddress, contractFileName,
-      contractName, ethereumEndpoint, worksPath);
+      contractName, ethereumEndpoint, name, worksPath, privKey);
 
   const contract = getContract(ethereumEndpoint, contractBuildFilePath,
                                contractFileName, contractName, contractAddress);
 
-  let publicKey;
-  let privateKey;
-
   contract.events.Log().on('data', (e) => {
-    log('on(): Log: %j', e);
+    log('on data(): [%s] Log: %j', name, e.returnValues);
+  });
+
+  contract.events.VolunteerChoose().on('data', async (e) => {
+    log('on data(): [%s] VolunteerChoose: %j', name, e.returnValues);
+    const { volunteers } = e.returnValues;
+    if (volunteers.includes(myAddress)) {
+      const _privKey = privKey.toString();
+      const revealSecret = await contract.methods.revealSecret(_privKey)
+        .send({ from: myAddress, gas: 6721975, gasPrice: '30000000' });
+
+      log('on data(): [%s] VolunteerChoose: revealSecret receipt, %s',
+          name, revealSecret.transactionHash);
+    }
   });
 
   contract.events.RandCreate().on('data', async (e) => {
-    log('on(): RandCreate: %j', e);
+    log('on data(): RandCreate: %j', e);
 
     if (e.returnValues.chosen === myAddress) {
       const { workInfo } = e.returnValues;
@@ -115,17 +134,12 @@ async function work(opts)
   });
 
   contract.events.RoundSetup().on('data', async (e) => {
-    log('on(): RoundSetup: %j', e);
+    log('on(): RoundSetup: pubKey: %s, privKey: %s, start bidding...',
+        pubKey, privKey);
 
-    const key = new NodeRSA({b: 512});
-    publicKey = key.exportKey('public').toString();
-    privateKey = key.exportKey('private').toString();
-    log('on(): RoundSetup: publicKey: %s, privateKey: %s',
-        publicKey, privateKey);
-
-    const bid = await contract.methods.bid(publicKey)
+    const bid = await contract.methods.bid(pubKey.toString())
       .send({ from: myAddress, gas: 6721975, gasPrice: '30000000' });
-    log('on(): RoundSetup: bid receipt, %j', bid);
+    log('on(): RoundSetup: bid receipt, %s', bid.transactionHash);
   });
 }
 

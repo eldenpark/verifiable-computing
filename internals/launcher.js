@@ -114,7 +114,7 @@ const processDefinitions = {
       stdio: 'inherit',
     },
   ),
-  'randgen:deploy': proc(
+  'randgen:launch': proc(
     'node',
     [
       './internals/standalone.js',
@@ -146,7 +146,7 @@ const processGroupDefinitions = {
 };
 
 const orders = {
-  build:    ['ethdev:build', 'randgen:build'],
+  build:    ['ethdev:build', 'randgen:build', 'contract:build'],
   default:  ['ethdev:build', 'randgen:build',
              'integration-test'],
 };
@@ -173,7 +173,7 @@ function launcher()
     });
 
     Launcher.runInSequence({
-      order
+      order,
     });
   } catch (err) {
     log('launcher(): Error reading file', err);
